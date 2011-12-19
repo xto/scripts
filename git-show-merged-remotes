@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+remote_branches = `git branch -r`.split
+current_branch =  `git symbolic-ref HEAD`.chomp.match(/^refs\/heads\/(\S+)$/)[1]
+merged_remote_branches = remote_branches.select{|branch|
+  `git branch --contains #{branch} | cut -c3- | grep #{current_branch}`.match(current_branch) unless branch.match(/->/)
+}.select{|branch| branch.match(/origin\/xt-[a-zA-Z]+-de|us\/case-[0-9]+/)}
+
+puts "List of branches that have been merged in #{current_branch}:\n\n#{merged_remote_branches.join("\n")}"
